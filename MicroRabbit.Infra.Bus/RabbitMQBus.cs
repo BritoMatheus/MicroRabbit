@@ -18,12 +18,14 @@ namespace MicroRabbit.Infra.Bus
         private readonly IMediator _mediator;
         private readonly Dictionary<string, List<Type>> _handlers;
         private readonly List<Type> _eventTypes;
+        private readonly ConnectionFactory ConnectionFactory;
 
         public RabbitMQBus(IMediator mediator)
         {
             _mediator = mediator;
             _handlers = new Dictionary<string, List<Type>>();
             _eventTypes = new List<Type>();
+            ConnectionFactory = new ConnectionFactory() { HostName = "192.168.99.100", Port = 5672, UserName = "guest", Password = "guest" };
         }
 
         public Task SendCommand<T>(T command) where T : Command
@@ -34,11 +36,10 @@ namespace MicroRabbit.Infra.Bus
 
         public void Publish<T>(T @event) where T : Event
         {
-            var factory = new ConnectionFactory() { HostName = "localhost" };
-            var connection = factory.CreateConnection("MicroRabbit.Producer");
+            var connection = ConnectionFactory.CreateConnection("MicroRabbit.Producer");
             var channel = connection.CreateModel();
             var eventName = @event.GetType().Name;
-            channel.QueueDeclare(eventName, true, true, false, null);
+            channel.QueueDeclare(eventName, true, false, false, null);
             var message = JsonConvert.SerializeObject(@event);
             var body = Encoding.UTF8.GetBytes(message);
             channel.BasicPublish("", eventName, null, body);
@@ -71,8 +72,8 @@ namespace MicroRabbit.Infra.Bus
 
         private void StartBasicConsume<T>() where T : Event
         {
-            var factory = new ConnectionFactory() { HostName = "localhost", DispatchConsumersAsync = true };
-            var connection = factory.CreateConnection("MicroRabbit.Consumer");
+            ConnectionFactory.DispatchConsumersAsync = true;
+            var connection = ConnectionFactory.CreateConnection("MicroRabbit.Consumer");
             var channel = connection.CreateModel();
 
             var eventName = typeof(T).Name;

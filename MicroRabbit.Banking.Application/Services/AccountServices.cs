@@ -16,7 +16,7 @@ namespace MicroRabbit.Banking.Application.Services
             IEventBus bus)
         {
             _accountRepository = accountRepository;
-            bus = _bus;
+            _bus = bus;
         }
 
         public IEnumerable<Account> Get()
