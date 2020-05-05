@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace MicroRabbit.Banking.Data.Migrations
 {
-    [DbContext(typeof(BankingDbContext))]
+    [DbContext(typeof(TranferDbContext))]
     partial class BankingDbContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)

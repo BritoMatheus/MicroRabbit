@@ -43,8 +43,6 @@ namespace MicroRabbit.Banking.Api
         private void RegisterServices(IServiceCollection services)
         {
             DependencyContainer.RegistrerServices(services);
-
-
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
